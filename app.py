@@ -1,11 +1,3 @@
-'''
-!pip3 install transformers
-!pip3 install shap
-!pip3 torch
-!pip3 install gradio
-!pip3 install numpy
-!pip3 install html
-'''
 import transformers
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import shap
