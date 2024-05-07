@@ -102,20 +102,6 @@ def classify_toxicity(sentence):
     
     return "\n".join(output)
 
-''' A version where we can see all the toxicity scores
-def explain_toxicity(sentence):
-    translated_text = translator(sentence, max_length=512)[0]['translation_text']
-    shap_values = explainer_toxic([translated_text], fixed_context=1)
-    result = []
-    for class_index, class_label in enumerate(class_labels_toxic):
-        words_and_shap_values = []
-        for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, class_index]):
-            escaped_word = html.escape(word)
-            color = 'pink' if shap_value > 0 else 'grey'
-            words_and_shap_values.append(f"<span style='color:{color}'>{escaped_word} ({round(shap_value, 4)})</span>")
-        result.append(f"{class_label}: {' '.join(words_and_shap_values)}")
-    return '\n'.join(result)
-'''
 
 def explain_toxicity(sentence):
     translated_text = translator(sentence, max_length=512)[0]['translation_text']
@@ -127,23 +113,24 @@ def explain_toxicity(sentence):
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, toxic_index]):
         escaped_word = html.escape(word)
         if shap_value > 0:
-            color = 'green'  # Positive SHAP value
+            color = '#b6ffb8'  # Light green for positive SHAP value
         elif shap_value < 0:
-            color = 'red'  # Negative SHAP value
+            color = '#ffccd1'  # Light red for negative SHAP value
         else:
             color = 'lightgrey'  # Neutral SHAP value
-        words_and_colors.append(f"<span style='background-color:{color};'>{escaped_word}</span>")
-    result_modified = "<strong>Modified:</strong> " + ' '.join(words_and_colors)
+            words_and_colors.append(" ")
+        words_and_colors.append(f"<span style='background-color:{color}; color:black;'>{escaped_word}</span>")
+    #result_modified = "<strong>Modified:</strong> " + ''.join(words_and_colors)
 
     words_with_scores = []
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, toxic_index]):
         escaped_word = html.escape(word)
-        color = 'pink' if shap_value > 0 else 'grey' 
+        color = '#ffb6c1' if shap_value > 0 else '#808080'  # Light pink for positive SHAP value, grey for negative SHAP value
         words_with_scores.append(f"({round(shap_value, 4)}) <span style='color:{color};'>{escaped_word}</span>")
     result_with_scores = "<strong>With Scores:</strong> " + ' '.join(words_with_scores)
 
-    return result_modified + "<br><br>" + result_with_scores  
-
+    #return result_modified + "<br><br>" + result_with_scores 
+    return ''.join(words_and_colors)
 
 ### SENTIMENT
 def classify_sentiment(sentence):
@@ -181,23 +168,24 @@ def explain_sentiment(sentence):
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, positive_index]):
         escaped_word = html.escape(word)
         if shap_value > 0:
-            color = 'green'  # Positive SHAP value
+            color = '#b6ffb8'  # Light green for positive SHAP value
         elif shap_value < 0:
-            color = 'red'  # Negative SHAP value
+            color = '#ffccd1'  # Light red for negative SHAP value
         else:
             color = 'lightgrey'  # Neutral SHAP value
-        words_and_colors.append(f"<span style='background-color:{color};'>{escaped_word}</span>")
-    result_modified = "<strong>Modified:</strong> " + ' '.join(words_and_colors)
+            words_and_colors.append(" ")
+        words_and_colors.append(f"<span style='background-color:{color}; color:black;'>{escaped_word}</span>")
+    result_modified = "<strong>Modified:</strong> " + ''.join(words_and_colors)
 
     words_with_scores = []
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, positive_index]):
         escaped_word = html.escape(word)
-        color = 'pink' if shap_value > 0 else 'grey' 
+        color = '#ffb6c1' if shap_value > 0 else '#808080'  # Light pink for positive SHAP value, grey for negative SHAP value
         words_with_scores.append(f"({round(shap_value, 4)}) <span style='color:{color};'>{escaped_word}</span>")
     result_with_scores = "<strong>With Scores:</strong> " + ' '.join(words_with_scores)
 
-    return result_modified + "<br><br>" + result_with_scores 
-
+    #return result_modified + "<br><br>" + result_with_scores 
+    return ''.join(words_and_colors)
 
 ### EMOTION
 def classify_emotion(sentence):
@@ -217,13 +205,9 @@ def classify_emotion(sentence):
 
 def explain_emotion(sentence):
     translated_text = translator(sentence, max_length=512)[0]['translation_text']
-    results = pipeline_emotion(translated_text, top_k=len(class_labels_emotion))
-
-    # Sort results and pick the top 3 emotions
-    top_results = sorted(results, key=lambda x: x['score'], reverse=True)[:3]
-    top_emotions = [result['label'] for result in top_results]
-
     shap_values = explainer_emotion([translated_text], fixed_context=1)
+
+    top_emotions = ['joy', 'sadness', 'anger']  # Top 3 emotions to explain
 
     result_modified = "<strong>Modified for Top Emotions:</strong><br>"
     result_with_scores = "<strong>With Scores for Top Emotions:</strong><br>"
@@ -236,23 +220,23 @@ def explain_emotion(sentence):
             shap_value = shap_value_array[emotion_index]
             escaped_word = html.escape(word)
             if shap_value > 0:
-                color = 'green'  # Positive SHAP value
+                color = '#b6ffb8'  # Light green for positive SHAP value
             elif shap_value < 0:
-                color = 'red'  # Negative SHAP value
+                color = '#ffccd1'  # Light red for negative SHAP value
             else:
                 color = 'lightgrey'  # Neutral SHAP value
-            words_and_colors.append(f"<span style='background-color:{color};'>{escaped_word}</span>")
-        result_modified += f"<br>{emotion.capitalize()}: " + ' '.join(words_and_colors)
+                words_and_colors.append(" ")
+            words_and_colors.append(f"<span style='background-color:{color}; color:black;'>{escaped_word}</span>")
+        result_modified += f"<br>{emotion.capitalize()}: " + ''.join(words_and_colors)
 
         words_with_scores = []
         for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, emotion_index]):
             escaped_word = html.escape(word)
-            color = 'pink' if shap_value > 0 else 'grey' 
+            color = '#ffb6c1' if shap_value > 0 else '#808080'  # Light pink for positive SHAP value, grey for negative SHAP value
             words_with_scores.append(f"({round(shap_value, 4)}) <span style='color:{color};'>{escaped_word}</span>")
         result_with_scores += f"<br>{emotion.capitalize()}: " + ' '.join(words_with_scores)
 
-    return result_modified + "<br><br>" + result_with_scores 
-
+    return result_modified #+ "<br><br>" + result_with_scores 
 
 ### FORMALITY
 def classify_formality(sentence):
@@ -282,23 +266,24 @@ def explain_formality(sentence):
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, formal_index]):
         escaped_word = html.escape(word)
         if shap_value > 0:
-            color = 'green'  # Positive SHAP value contributes to formality
+            color = '#b6ffb8'  # Light green for positive SHAP value
         elif shap_value < 0:
-            color = 'red'  # Negative SHAP value contributes against formality
+            color = '#ffccd1'  # Light red for negative SHAP value
         else:
             color = 'lightgrey'  # Neutral SHAP value
-        words_and_colors.append(f"<span style='background-color:{color};'>{escaped_word}</span>")
-    result_modified = "<strong>Modified:</strong> " + ' '.join(words_and_colors)
+            words_and_colors.append(" ")
+        words_and_colors.append(f"<span style='background-color:{color}; color:black;'>{escaped_word}</span>")
+    #result_modified = "<strong>Modified:</strong> " + ''.join(words_and_colors)
 
     words_with_scores = []
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, formal_index]):
         escaped_word = html.escape(word)
-        color = 'pink' if shap_value > 0 else 'grey'  
+        color = '#ffb6c1' if shap_value > 0 else '#808080'  # Light pink for positive SHAP value, grey for negative SHAP value
         words_with_scores.append(f"({round(shap_value, 4)}) <span style='color:{color};'>{escaped_word}</span>")
     result_with_scores = "<strong>With Scores:</strong> " + ' '.join(words_with_scores)
 
-    return result_modified + "<br><br>" + result_with_scores
-
+    #return result_modified + "<br><br>" + result_with_scores 
+    return ''.join(words_and_colors)
 
 # Create Gradio interface
 with gr.Blocks() as iface:
