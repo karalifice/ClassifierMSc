@@ -265,7 +265,6 @@ def explain_formality(sentence):
     words_and_colors = []
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, formal_index]):
         escaped_word = html.escape(word)
-        
         # This model works the opposite way as the other, that's why the arrows are different.
         if shap_value < 0:
             color = '#b6ffb8'  # Light green for positive SHAP value
