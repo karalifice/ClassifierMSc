@@ -265,9 +265,11 @@ def explain_formality(sentence):
     words_and_colors = []
     for word, shap_value in zip(shap_values[0].data, shap_values[0].values[:, formal_index]):
         escaped_word = html.escape(word)
-        if shap_value > 0:
+        
+        # This model works the opposite way as the other, that's why the arrows are different.
+        if shap_value < 0:
             color = '#b6ffb8'  # Light green for positive SHAP value
-        elif shap_value < 0:
+        elif shap_value > 0:
             color = '#ffccd1'  # Light red for negative SHAP value
         else:
             color = 'lightgrey'  # Neutral SHAP value
@@ -284,6 +286,7 @@ def explain_formality(sentence):
 
     #return result_modified + "<br><br>" + result_with_scores 
     return ''.join(words_and_colors)
+
 
 # Create Gradio interface
 with gr.Blocks() as iface:
