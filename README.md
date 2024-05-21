@@ -16,8 +16,8 @@ Ensure you have Python 3.8 or higher installed. The required libraries are liste
 Clone the repository:
 
 ```
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/karalifice/ClassifierMSc.git
+cd ClassifierMSc
 ```
 Install the required libraries:
 ```
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 Run the app.py script:
 ```
-python app.py
+python3 app.py
 ```
 After running the script, a local Gradio interface will launch. Open your browser and navigate to the localhost link provided in the terminal (typically http://127.0.0.1:7860).
 
